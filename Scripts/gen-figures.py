@@ -1,11 +1,13 @@
-import collections
-import os
-from collections import OrderedDict
 import datetime
+import os
+import re
+from collections import OrderedDict
 from datetime import timedelta
+
 import matplotlib.pyplot as plt
 from dateutil.relativedelta import relativedelta
 from pydriller import Repository
+
 
 def asserts_plot():
     index = 30
@@ -21,17 +23,15 @@ def asserts_plot():
                 index -= 1
     file.close()
     plt.plot(filenamesList, numberofassertslist)
-    plt.xlabel('file names with top assert stmts.')
-    plt.ylabel('Nr. of assert stmts.')
+    plt.xlabel('File names with top assert statements')
+    plt.ylabel('Number of assert statements')
 
     # giving a title to my graph
-    plt.title('Assert stmts. graph')
+    plt.title('Assert Statements Graph')
     plt.xticks(rotation=45, ha="right")
-
+    plt.tight_layout()
     # function to show the plot
     plt.show()
-
-
 
 
 def debug_assert_plot():
@@ -48,16 +48,14 @@ def debug_assert_plot():
                 index -= 1
     file.close()
     plt.plot(filenamesList, numberofassertslist)
-    plt.xlabel('file names with top assert statements')
-    plt.ylabel('Nr. of Assert stmts.')
+    plt.xlabel('File names with top assert statements')
+    plt.ylabel('Number of Assert statements')
 
     # giving a title to my graph
     plt.title('Assert Debug statements graph')
     plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
     plt.show()
-
-
-
 
 
 def debug_assert_plot2():
@@ -74,16 +72,15 @@ def debug_assert_plot2():
                 index -= 1
     file.close()
     plt.plot(filenamesList, numberofassertslist)
-    plt.xlabel('file names with top debug statements')
-    plt.ylabel('Nr. of Debug stmts.')
+    plt.xlabel('File Names with top debug statements')
+    plt.ylabel('Nr. of Debug statements')
 
     # giving a title to my graph
     plt.title('Assert Debug statements graph')
     plt.xticks(rotation=45, ha="right")
-
+    plt.tight_layout()
     # function to show the plot
     plt.show()
-
 
 
 def branch_coverage():
@@ -105,13 +102,13 @@ def branch_coverage():
         coverage_dict[filename] = coverage
 
     plt.plot(list(branch_dict.keys())[:20], list(branch_dict.values())[:20])
-    plt.xlabel('file names')
-    plt.ylabel('Nr. of branches covered')
-
+    plt.xlabel('File Names')
+    plt.ylabel('Number of branches covered')
     plt.title('Branch Coverage')
     plt.xticks(rotation=45, ha="right")
-
+    plt.tight_layout()
     plt.show()
+
 
 def statement_coverage():
     file = open('../Outputs/output.csv', 'r')
@@ -132,13 +129,14 @@ def statement_coverage():
         coverage_dict[filename] = coverage
 
     plt.plot(list(stats_dict.keys())[:20], list(stats_dict.values())[:20])
-    plt.xlabel('file names')
-    plt.ylabel('Nr. of stmts. covered')
+    plt.xlabel('File Names')
+    plt.ylabel('Number of statements covered')
 
     plt.title('Statement Coverage')
     plt.xticks(rotation=45, ha="right")
-
+    plt.tight_layout()
     plt.show()
+
 
 def total_coverage():
     file = open('../Outputs/output.csv', 'r')
@@ -159,28 +157,31 @@ def total_coverage():
         coverage_dict[filename] = coverage
 
     plt.plot(list(coverage_dict.keys())[:20], list(coverage_dict.values())[:20])
-    plt.xlabel('file names')
+    plt.xlabel('File Names')
     plt.ylabel('Coverage Percentile')
-
     plt.title('Coverage')
     plt.xticks(rotation=45, ha="right")
-
+    plt.tight_layout()
     plt.show()
+
+
 month_dict = {}
 
-def add_commits(month,commit):
+
+def add_commits(month, commit):
     if commit.committer_date.date().month == month:
         if month_dict.get(month):
             month_dict[month] += 1
         else:
             month_dict[month] = 1
+
+
 def commits_by_month():
     start_date = datetime.datetime.now()
     delta_period = 12
     end_date = start_date - relativedelta(months=delta_period) - timedelta(days=-delta_period)
 
-    for commit in Repository('C:/Usha/Courses/PAT/finalproject/numpynew/numpy', since=end_date, to=start_date).traverse_commits():
-        # print(len(commit.modified_files))
+    for commit in Repository('https://github.com/numpy/numpy.git', since=end_date, to=start_date).traverse_commits():
         add_commits(1, commit)
         add_commits(2, commit)
         add_commits(3, commit)
@@ -194,9 +195,6 @@ def commits_by_month():
         add_commits(11, commit)
         add_commits(12, commit)
 
-    # for key,value in month_dict.items():
-    #     print(key, value)
-
     fig = plt.figure(figsize=(10, 5))
 
     # creating the bar plot
@@ -206,7 +204,9 @@ def commits_by_month():
     plt.xlabel("Month")
     plt.ylabel("Total number of commits")
     plt.title("Number of commits by month")
+    plt.tight_layout()
     plt.show()
+
 
 def top_contributors():
     start_date = datetime.datetime.now()
@@ -214,8 +214,7 @@ def top_contributors():
     end_date = start_date - relativedelta(months=delta_period) - timedelta(days=-delta_period)
     month_dict = {}
     total_commits = 0
-    for commit in Repository('C:/Usha/Courses/PAT/finalproject/numpynew/numpy', since=end_date, to=start_date).traverse_commits():
-        # print(len(commit.modified_files))
+    for commit in Repository('https://github.com/numpy/numpy.git', since=end_date, to=start_date).traverse_commits():
         total_commits += 1
         author_name = commit.author.name
         if month_dict.get(author_name):
@@ -223,13 +222,99 @@ def top_contributors():
         else:
             month_dict[author_name] = 1
 
-    print(total_commits)
     odict = dict(sorted(month_dict.items(), key=lambda item: item[1], reverse=True))
     fig = plt.figure(figsize=(10, 7))
     plt.pie(list(odict.values())[:10], labels=list(odict.keys())[:10])
-
+    plt.title("Top Contributors Over The Last Year")
     # show plot
     plt.show()
+
+
+def total_modified():
+    files_list = []
+    modified_list = []
+    file = open('../Outputs/FilesModified.csv', 'r')
+    lines = file.readlines()[1:]
+    file.close()
+    index = 10
+    for line in lines:
+        if index > 1:
+            list_modified = line.split(",")
+            files_list.append(list_modified[0])
+            modified_list.append(list_modified[1])
+            index -= 1
+
+    plt.plot(files_list, modified_list)
+    plt.xlabel('File Name')
+    plt.ylabel('Number of times file is modified')
+    plt.title('Files Modified Plot')
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+    plt.show()
+
+
+def files_added_by_date():
+    start_date = datetime.datetime.now()
+    delta_period = 6
+    end_date = start_date - relativedelta(months=delta_period) - timedelta(days=-delta_period)
+
+    added_files_list = {}
+
+    for commit in Repository('https://github.com/numpy/numpy.git', since=end_date, to=start_date).traverse_commits():
+        for file in commit.modified_files:
+            filename = file.filename
+            if re.match('^.*test.*\.py$', file.filename):
+                if file.change_type == file.change_type.ADD:
+                    author_date = commit.author_date
+                    if added_files_list.get(author_date):
+                        added_files_list[author_date] = added_files_list.get(author_date) + 1
+                    else:
+                        added_files_list[author_date] = 1
+
+    plt.plot(added_files_list.keys(), added_files_list.values())
+    plt.xlabel('File Added Date')
+    plt.ylabel('Number of Files Added')
+
+    plt.title('Number of files added by date')
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+    plt.show()
+
+
+def authors_modified():
+    start_date = datetime.datetime.now()
+    delta_period = 6
+    end_date = start_date - relativedelta(months=delta_period) - timedelta(days=-delta_period)
+
+    author_list = {}
+
+    for commit in Repository('https://github.com/numpy/numpy.git', since=end_date, to=start_date).traverse_commits():
+        for file in commit.modified_files:
+            filename = file.filename
+            if re.match('^.*test.*\.py$', file.filename):
+                if file.change_type == file.change_type.MODIFY:
+                    if author_list.get(filename):
+                        author_list.get(file.filename).add(commit.author.name)
+                    else:
+                        author_list[filename] = {commit.author.name}
+
+    finaldict = {}
+    index = 10
+    for key, value in author_list.items():
+        if index > 0:
+            finaldict[key] = len(value)
+            index -= 1
+
+    plt.plot(finaldict.keys(), finaldict.values())
+    plt.xlabel('File Name')
+    plt.ylabel('Nr. of authors who modified the file')
+
+    plt.title('Authors Modified Report')
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+    plt.show()
+
+
 asserts_plot()
 debug_assert_plot()
 debug_assert_plot2()
@@ -238,3 +323,6 @@ statement_coverage()
 total_coverage()
 commits_by_month()
 top_contributors()
+total_modified()
+files_added_by_date()
+authors_modified()
