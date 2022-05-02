@@ -34,11 +34,14 @@ with open('../Outputs/FilesAdded.csv', 'w') as f:
                     else:
                         author_list[filename] = {commit.author.name}
 
+
+odict = dict(sorted(files_list.items(), key=lambda item: item[1], reverse=True))
+
 with open('../Outputs/FilesModified.csv', 'w') as f:
     w = csv.writer(f)
     header = ['File Name', 'Modification Count']
     w.writerow(header)
-    w.writerows(files_list.items())
+    w.writerows(odict.items())
 
 with open('../Outputs/AuthorList.csv', 'w') as f:
     w = csv.writer(f)
