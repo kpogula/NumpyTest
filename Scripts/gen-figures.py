@@ -35,7 +35,7 @@ def asserts_plot():
 
 
 def debug_assert_plot():
-    index = 30
+    index = 15
     filenamesList = []
     numberofassertslist = []
     with open("../Outputs/asserts_debug_count1.csv", "r", encoding='utf-8') as file:
@@ -47,16 +47,25 @@ def debug_assert_plot():
                 numberofassertslist.append(lines_list[1])
                 index -= 1
     file.close()
-    plt.plot(filenamesList, numberofassertslist)
-    plt.xlabel('File names with top assert statements')
-    plt.ylabel('Number of Assert statements')
+    # plt.plot(filenamesList, numberofassertslist)
+    # plt.xlabel('File names with top assert statements')
+    # plt.ylabel('Number of Assert statements')
+    #
+    # # giving a title to my graph
+    # plt.title('Assert Debug statements graph')
+    # plt.xticks(rotation=45, ha="right")
+    # plt.tight_layout()
+    # plt.show()
 
-    # giving a title to my graph
-    plt.title('Assert Debug statements graph')
+    plt.bar(filenamesList, numberofassertslist, color='orange',
+            width=0.4)
+
+    plt.xlabel("File names with top assert statements")
+    plt.ylabel("Number of Assert statements")
+    plt.title("Assert Statements Plot")
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
     plt.show()
-
 
 def debug_assert_plot2():
     index = 30
@@ -76,7 +85,7 @@ def debug_assert_plot2():
     plt.ylabel('Nr. of Debug statements')
 
     # giving a title to my graph
-    plt.title('Assert Debug statements graph')
+    plt.title('Debug Statements Graph')
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
     # function to show the plot
@@ -315,14 +324,14 @@ def authors_modified():
     plt.show()
 
 
-asserts_plot()
-debug_assert_plot()
+# asserts_plot()
+#debug_assert_plot()
 debug_assert_plot2()
-branch_coverage()
-statement_coverage()
-total_coverage()
-commits_by_month()
-top_contributors()
-total_modified()
-files_added_by_date()
-authors_modified()
+# branch_coverage()
+# statement_coverage()
+# total_coverage()
+# commits_by_month()
+# top_contributors()
+# total_modified()
+# files_added_by_date()
+# authors_modified()
